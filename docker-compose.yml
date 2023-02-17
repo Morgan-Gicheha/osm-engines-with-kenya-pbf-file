@@ -1,0 +1,26 @@
+version: '2'
+services:
+  nominatim:
+    # image: nominatim
+    build:
+      context: ./nominatim-3.1
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./nominatimdata/postgresdata:/var/lib/postgresql/9.5/main
+      - ./nominatim-3.1/local.php:/app/src/build/settings/local.php
+    ports:
+      - 6432:5432
+      - 7070:8080
+    command: sh /app/start.sh
+
+  photon:
+    build:
+      context: ./photon
+      dockerfile: Dockerfile
+    depends_on:
+      - nominatim
+    volumes:
+      - ./photondata:/photon/photon_data
+    ports:
+      - 2322:2322
